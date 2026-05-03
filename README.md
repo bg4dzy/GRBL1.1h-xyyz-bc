@@ -1,4 +1,4 @@
-# GRBL v1.1 for Atmega328p (Arduino UNO or NANO) with Backlash Compensation
+# GRBL v1.1h for Atmega328p (Arduino UNO or NANO) with Backlash Compensation
 
 ## Compile
 It is recommended to use avr-gcc v4.92 and not to use the Arduino IDE for compilation.
