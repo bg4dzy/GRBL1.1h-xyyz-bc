@@ -12,7 +12,7 @@ Do not use the Arduino IDE to upload, or do not use the ```avrdude``` command wi
 ***This means you cannot upload the HEX file via the bootloader.***
 
   1. Prepare a separate Arduino board (e.g., Arduino Mega2560) and burn the ArduinoISP sketch.
-  2. Wire up the two Arduino boards as shown in the [figure](https://docs.arduino.cc/static/a2d9d884287f098ba5ef53a61943adc5/e07e9/MegaToUNO.jpg).
+  2. Wire up the two Arduino boards as shown in the [figure](https://docs.arduino.cc/static/a2d9d884287f098ba5ef53a61943adc5/1aa4e/MegaToUNO.jpg).
   3. Run command:
      ```
      avrdude -C[your avrdude.conf path] -v -patmega328p -cstk500v1 -PCOM6 -b19200 -Uflash:w:[your grbl.hex]:i
