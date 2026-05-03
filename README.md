@@ -3,7 +3,7 @@
 ## Compile
 It is recommended to use avr-gcc v4.92 and not to use the Arduino IDE for compilation.
 
-  1. Set the avr-gcc path to an environment variable.
+  1. Set the ```avr-gcc``` path to an environment variable.
   2. Run ```make clean & make``` for compilation.
 
 ## Upload 
