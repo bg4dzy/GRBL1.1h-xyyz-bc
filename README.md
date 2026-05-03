@@ -19,11 +19,11 @@ Do not use the Arduino IDE to upload, or do not use the ```avrdude``` command wi
      ```
 
 ## Set Backlash Compensation
-  ```
-  $140=x.xxx  ;X-axis backlash compensation, unit: mm 
-  $141=x.xxx  ;y-axis backlash compensation, unit: mm 
-  $142=x.xxx  ;z-axis backlash compensation, unit: mm
-  ```
+    ```
+    $140=x.xxx  ;X-axis backlash compensation, unit: mm 
+    $141=x.xxx  ;y-axis backlash compensation, unit: mm 
+    $142=x.xxx  ;z-axis backlash compensation, unit: mm
+    ```
 
 ## Thanks
   Jeff Dill
