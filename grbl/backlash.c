@@ -18,7 +18,7 @@ void backlash_initialize()
 void backlash_comp(float *target, plan_line_data_t *pl_data)
 {
 	int32_t target_steps[N_AXIS];
-	int32_t *position_steps;
+	int32_t *position_steps = NULL;
 	
 	if (pl_data->condition & PL_COND_FLAG_SYSTEM_MOTION) {
 		#ifdef COREXY

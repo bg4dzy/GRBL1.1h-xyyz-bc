@@ -170,7 +170,11 @@
 
       // NOTE: Dual axis limit is shared with the z-axis limit pin by default. Pin used must be on the same port
       // as other limit pins.
-      #define DUAL_LIMIT_BIT    Z_LIMIT_BIT
+      
+      // modified by bg4dzy
+      //#define DUAL_LIMIT_BIT    Z_LIMIT_BIT
+      #define DUAL_LIMIT_BIT	Y_LIMIT_BIT
+      
       #define LIMIT_MASK        ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)|(1<<DUAL_LIMIT_BIT))
 
       // Define coolant enable output pins.
