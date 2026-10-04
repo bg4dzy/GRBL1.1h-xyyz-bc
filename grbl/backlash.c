@@ -63,8 +63,16 @@ void backlash_comp(float *target, plan_line_data_t *pl_data)
 		plan_line_data_t new_plan;
 		plan_line_data_t *new_pl = &new_plan;
 		memcpy(new_pl,pl_data,sizeof(plan_line_data_t));
+		// FIX(v3): 补偿块必须继承父运动的主轴状态位。
+		// 若块内不含 SPINDLE_CW/CCW，stepper.c 分段预处理会置
+		// current_spindle_pwm = SPINDLE_PWM_OFF_VALUE，ISR 装载补偿块 segment 时
+		// spindle_set_speed(0) 清 COM2A1，PWM 在整个补偿行程期间中断。
+		// 常规主轴模式继承之，使补偿期间主轴持续运转；激光模式保持关闭(安全)。
 		new_plan.condition = (1 << PL_COND_FLAG_BACKLASH_COMP);
 		new_plan.condition |= PL_COND_FLAG_RAPID_MOTION;
+		if (!(settings.flags & BITFLAG_LASER_MODE)) {
+			new_plan.condition |= (pl_data->condition & PL_COND_ACCESSORY_MASK);
+		}
 		mc_line(new_target,&new_plan);
 	}
 }
