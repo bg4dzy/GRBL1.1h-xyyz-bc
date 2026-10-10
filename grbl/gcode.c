@@ -87,6 +87,10 @@ uint8_t gc_execute_line(char *line)
   uint16_t command_words = 0; // Tracks G and M command words. Also used for modal group violations.
   uint16_t value_words = 0; // Tracks value words.
   uint8_t gc_parser_flags = GC_PARSER_NONE;
+  // Tracks a stepper enable/disable word (M17/M18) in this block. Zero when absent.
+  // NOTE: Deliberately a local, not a gc_modal_t field, to keep the static RAM cost at zero and
+  // because the action must run AFTER motion, not from the non-modal switch earlier in STEP 4.
+  uint8_t m_power_cmd = 0;
 
   // Determine if the line is a jogging motion or a normal g-code block.
   if (line[0] == '$') { // NOTE: `$J=` already parsed when passed to this function.
@@ -273,6 +277,13 @@ uint8_t gc_execute_line(char *line)
               case 8: gc_block.modal.coolant |= COOLANT_FLOOD_ENABLE; break;
               case 9: gc_block.modal.coolant = COOLANT_DISABLE; break; // M9 disables both M7 and M8.
             }
+            break;
+          // Stepper driver enable/disable control. These are not Grbl modal states in the usual
+          // sense; the desired state is carried out of this parser by m_power_cmd and latched into
+          // sys.stepper_power only if the whole block survives STEP 3 error-checking.
+          case 17: case 18:
+            word_bit = MODAL_GROUP_M10;
+            m_power_cmd = int_value; // 17 = force enable, 18 = force disable.
             break;
           #ifdef ENABLE_PARKING_OVERRIDE_CONTROL
             case 56:
@@ -1125,6 +1136,22 @@ uint8_t gc_execute_line(char *line)
       report_feedback_message(MESSAGE_PROGRAM_END);
     }
     gc_state.modal.program_flow = PROGRAM_FLOW_RUNNING; // Reset program flow.
+  }
+  // [22. Stepper power control ]: M17/M18 force the driver enable pin regardless of the $1 policy.
+  // NOTE: Placed after [20. Motion modes] on purpose. Executing this before the motion would feed
+  // step pulses to an already de-energized driver for lines that combine a move with M18.
+  // NOTE: m_power_cmd is a local, so any STEP 3 failure above simply discards it and nothing happens.
+  if (m_power_cmd) {
+    if (sys.state != STATE_CHECK_MODE) { // Do not touch hardware while checking g-code with $C.
+      if (m_power_cmd == 18) {           // M18
+        // Drain the planner first so no queued motion is lost when the holding current drops.
+        protocol_buffer_synchronize();
+        sys.stepper_power = STEPPER_POWER_LOCK_DISABLE;
+        st_go_idle();                    // Takes the LOCK_DISABLE branch. No $1 dwell.
+      } else {                           // M17
+        st_steppers_enable_force();      // Sets LOCK_ENABLE and energizes drivers immediately.
+      }
+    }
   }
 
   // TODO: % to denote start of program.

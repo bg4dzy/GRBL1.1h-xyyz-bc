@@ -35,6 +35,10 @@ void st_wake_up();
 // Immediately disables steppers
 void st_go_idle();
 
+// added by bg4dzy for M17&M18
+// Forces steppers enabled and sets the M17 lock state. Called by the M17 command.
+void st_steppers_enable_force();
+
 // Generate the step and direction port invert masks.
 void st_generate_step_dir_invert_masks();
 

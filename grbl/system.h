@@ -101,6 +101,15 @@
 #define STEP_CONTROL_EXECUTE_SYS_MOTION   bit(2)
 #define STEP_CONTROL_UPDATE_SPINDLE_PWM   bit(3)
 
+// added by bg4dzy for M17&M18
+// Define forced stepper driver enable/disable states. (Added for M17/M18 support.)
+// NOTE: These states override the settings.stepper_idle_lock_time ($1) policy and persist across
+// motions, but NOT across a reset. Cleared to STEPPER_POWER_AUTO by the sys struct memset() in main().
+#define STEPPER_POWER_AUTO         0  // Must be zero. Default: idle behaviour governed by $1.
+#define STEPPER_POWER_LOCK_ENABLE  1  // M17: Keep drivers energized, even after motion completes.
+#define STEPPER_POWER_LOCK_DISABLE 2  // M18: De-energize immediately once motion completes.
+
+
 // Define control pin index for Grbl internal use. Pin maps may change, but these values don't.
 #ifdef ENABLE_SAFETY_DOOR_INPUT_PIN
   #define N_CONTROL_PIN 4
@@ -135,6 +144,8 @@ typedef struct {
   #ifdef ENABLE_DUAL_AXIS
     uint8_t homing_axis_lock_dual;
   #endif
+  // added by bg4dzy for M17&M18
+  volatile uint8_t stepper_power;  // {M17,M18} Forced stepper state. Written by gcode.c, read by st_go_idle() in ISR context.
   uint8_t f_override;          // Feed rate override value in percent
   uint8_t r_override;          // Rapids override value in percent
   uint8_t spindle_speed_ovr;   // Spindle speed value in percent
