@@ -6,6 +6,7 @@
     $142=x.xxx  ;z-axis backlash compensation, unit: mm
 
 ## History
+  + 2026.10.08 Added M17/M18 commands for holding/releasing stepper motors. Just like LinuxCNC, but due to hardware limitations, it cannot support controlling the specified axis.
   + 2026.10.04 The interruption of the main spindle PWN signal during return compensation has been corrected.
 
 ## Thanks
